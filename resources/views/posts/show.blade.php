@@ -24,14 +24,6 @@
             {{-- Post Article --}}
             <article class="card" style="overflow:hidden">
 
-                {{-- Cover Image --}}
-                @if($post->cover_image)
-                <div style="aspect-ratio:16/6; overflow:hidden">
-                    <img src="{{ asset('storage/' . $post->cover_image) }}" alt="{{ $post->title }}"
-                         style="width:100%; height:100%; object-fit:cover">
-                </div>
-                @endif
-
                 <div style="padding:1.75rem 2rem">
 
                     {{-- Badges --}}
@@ -97,6 +89,14 @@
                     <div class="prose" style="max-width:none">
                         {!! $post->rendered_body !!}
                     </div>
+
+                    {{-- Cover Image --}}
+                    @if($post->cover_image)
+                    <div style="margin-top:1.5rem; border-radius:10px; overflow:hidden; max-height:420px">
+                        <img src="{{ asset('storage/' . $post->cover_image) }}" alt="{{ $post->title }}"
+                             style="width:100%; height:100%; object-fit:cover; display:block">
+                    </div>
+                    @endif
                 </div>
 
                 {{-- Vote Footer --}}

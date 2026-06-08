@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminCommentController;
+use App\Http\Controllers\Admin\AdminPostController;
+use App\Http\Controllers\Admin\AdminTaxonomyController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
@@ -43,12 +48,64 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Categories (admin only)
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+
+    // Tags (admin only)
+    Route::post('/tags', [\App\Http\Controllers\TagController::class, 'store'])->name('tags.store');
+
+    // Post Types (admin only)
+    Route::post('/post-types', [\App\Http\Controllers\PostTypeController::class, 'store'])->name('post_types.store');
+
     // Image upload for post editor
     Route::post('/upload/image', function (Request $request) {
         $request->validate(['image' => 'required|image|max:4096']);
         $path = $request->file('image')->store('post-images', 'public');
         return response()->json(['url' => asset('storage/' . $path)]);
     })->name('upload.image');
+});
+
+// ── Admin Routes ─────────────────────────────────────────────────────────────
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    // Users
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Posts
+    Route::get('/posts', [AdminPostController::class, 'index'])->name('posts.index');
+    Route::patch('/posts/{post}/pin', [AdminPostController::class, 'togglePin'])->name('posts.pin');
+    Route::patch('/posts/{post}/lock', [AdminPostController::class, 'toggleLock'])->name('posts.lock');
+    Route::patch('/posts/{post}/status', [AdminPostController::class, 'updateStatus'])->name('posts.status');
+    Route::delete('/posts/{post}', [AdminPostController::class, 'destroy'])->name('posts.destroy');
+    Route::patch('/posts/{id}/restore', [AdminPostController::class, 'restore'])->name('posts.restore');
+    Route::delete('/posts/{id}/force', [AdminPostController::class, 'forceDelete'])->name('posts.force-delete');
+
+    // Comments
+    Route::get('/comments', [AdminCommentController::class, 'index'])->name('comments.index');
+    Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
+    Route::patch('/comments/{id}/restore', [AdminCommentController::class, 'restore'])->name('comments.restore');
+    Route::delete('/comments/{id}/force', [AdminCommentController::class, 'forceDelete'])->name('comments.force-delete');
+
+    // Categories
+    Route::get('/categories', [AdminTaxonomyController::class, 'categoriesIndex'])->name('categories.index');
+    Route::post('/categories', [AdminTaxonomyController::class, 'categoryStore'])->name('categories.store');
+    Route::patch('/categories/{category}', [AdminTaxonomyController::class, 'categoryUpdate'])->name('categories.update');
+    Route::delete('/categories/{category}', [AdminTaxonomyController::class, 'categoryDestroy'])->name('categories.destroy');
+
+    // Tags
+    Route::get('/tags', [AdminTaxonomyController::class, 'tagsIndex'])->name('tags.index');
+    Route::post('/tags', [AdminTaxonomyController::class, 'tagStore'])->name('tags.store');
+    Route::patch('/tags/{tag}', [AdminTaxonomyController::class, 'tagUpdate'])->name('tags.update');
+    Route::delete('/tags/{tag}', [AdminTaxonomyController::class, 'tagDestroy'])->name('tags.destroy');
+
+    // Post Types
+    Route::get('/post-types', [AdminTaxonomyController::class, 'postTypesIndex'])->name('post-types.index');
+    Route::post('/post-types', [AdminTaxonomyController::class, 'postTypeStore'])->name('post-types.store');
+    Route::patch('/post-types/{postType}', [AdminTaxonomyController::class, 'postTypeUpdate'])->name('post-types.update');
+    Route::delete('/post-types/{postType}', [AdminTaxonomyController::class, 'postTypeDestroy'])->name('post-types.destroy');
 });
 
 // ── Breeze Auth Routes ────────────────────────────────────────────────────────

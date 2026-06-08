@@ -116,6 +116,12 @@
                                 {{ auth()->user()->email }}
                             </div>
                         </div>
+                        @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="dropdown-item">
+                            <svg width="14" height="14" fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            <span style="color:#f87171">لوحة التحكم</span>
+                        </a>
+                        @endif
                         <a href="{{ route('profile.edit') }}" class="dropdown-item">
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             <span data-i18n="profile">الملف الشخصي</span>
@@ -177,6 +183,7 @@
     </div>
 </footer>
 
+@stack('modals')
 @stack('scripts')
 <script>
 function toggleDropdown(id) {

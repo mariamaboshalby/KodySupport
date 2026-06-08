@@ -97,7 +97,6 @@ YouTube: click the YouTube button and paste the video URL." required>{{ old('bod
                 </label>
             </div>
             <script>
-            // When "Remove image" is checked, show visual feedback and hide the preview
             document.querySelector('[name="remove_cover_image"]')?.addEventListener('change', function() {
                 const wrapper = this.closest('.form-group').querySelector('[style*="height:120px"]');
                 if (this.checked) {
@@ -120,17 +119,39 @@ YouTube: click the YouTube button and paste the video URL." required>{{ old('bod
 
         {{-- Type --}}
         <div class="card" style="padding:1rem">
-            <label class="form-label" for="type" data-i18n="post_type">نوع المقال</label>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem">
+                <label class="form-label" for="type" style="margin-bottom:0" data-i18n="post_type">نوع المقال</label>
+                @if(auth()->user()?->isAdmin())
+                <button type="button" onclick="openPostTypeModal()"
+                        style="display:inline-flex; align-items:center; gap:0.3rem; font-size:0.75rem; color:var(--color-cyan-400); background:none; border:none; cursor:pointer; padding:0; line-height:1">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    جديد
+                </button>
+                @endif
+            </div>
             <select id="type" name="type" class="form-select">
-                @foreach(['post' => 'نقاش', 'announcement' => 'إعلان', 'documentation' => 'توثيق', 'changelog' => 'سجل تغييرات'] as $value => $label)
-                <option value="{{ $value }}" data-i18n="post_type_{{ $value }}" {{ old('type', $post?->type ?? 'post') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                @foreach($postTypes as $pt)
+                <option value="{{ $pt->slug }}"
+                        data-color="{{ $pt->color }}"
+                        {{ old('type', $post?->type ?? 'post') === $pt->slug ? 'selected' : '' }}>
+                    {{ $pt->name }}
+                </option>
                 @endforeach
             </select>
         </div>
 
         {{-- Category --}}
         <div class="card" style="padding:1rem">
-            <label class="form-label" for="category_id" data-i18n="category">التصنيف</label>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem">
+                <label class="form-label" for="category_id" style="margin-bottom:0" data-i18n="category">التصنيف</label>
+                @if(auth()->user()?->isAdmin())
+                <button type="button" onclick="openCategoryModal()"
+                        style="display:inline-flex; align-items:center; gap:0.3rem; font-size:0.75rem; color:var(--color-cyan-400); background:none; border:none; cursor:pointer; padding:0; line-height:1">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    جديد
+                </button>
+                @endif
+            </div>
             <select id="category_id" name="category_id" class="form-select">
                 <option value="" data-i18n="none">— لا شيء —</option>
                 @foreach($categories as $cat)
@@ -143,8 +164,17 @@ YouTube: click the YouTube button and paste the video URL." required>{{ old('bod
 
         {{-- Tags --}}
         <div class="card" style="padding:1rem">
-            <label class="form-label" data-i18n="tags">الوسوم</label>
-            <div style="display:flex; flex-wrap:wrap; gap:0.5rem">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem">
+                <label class="form-label" style="margin-bottom:0" data-i18n="tags">الوسوم</label>
+                @if(auth()->user()?->isAdmin())
+                <button type="button" onclick="openTagModal()"
+                        style="display:inline-flex; align-items:center; gap:0.3rem; font-size:0.75rem; color:var(--color-cyan-400); background:none; border:none; cursor:pointer; padding:0; line-height:1">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    جديد
+                </button>
+                @endif
+            </div>
+            <div id="tagsContainer" style="display:flex; flex-wrap:wrap; gap:0.5rem">
                 @foreach($tags as $tag)
                 @php $selected = old('tags') ? in_array($tag->id, old('tags')) : ($post && $post->tags->contains($tag->id)); @endphp
                 <label style="display:flex; align-items:center; gap:0.35rem; cursor:pointer">
@@ -197,6 +227,114 @@ YouTube: click the YouTube button and paste the video URL." required>{{ old('bod
 </style>
 @endpush
 
+@push('modals')
+@if(auth()->user()?->isAdmin())
+
+{{-- Category Modal --}}
+<div id="categoryModal"
+     style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem">
+    <div style="background:var(--color-surface-800); border:1px solid var(--color-slate-border); border-radius:14px; padding:1.5rem; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem">
+            <h3 style="font-size:1rem; font-weight:700; color:var(--color-text-primary); margin:0">تصنيف جديد</h3>
+            <button type="button" onclick="closeCategoryModal()"
+                    style="background:none; border:none; color:var(--color-text-muted); cursor:pointer; padding:0.25rem; border-radius:4px; line-height:1">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div style="margin-bottom:1rem">
+            <label style="display:block; font-size:0.8125rem; font-weight:500; color:var(--color-text-secondary); margin-bottom:0.4rem">
+                اسم التصنيف <span style="color:var(--color-danger)">*</span>
+            </label>
+            <input type="text" id="catName" class="form-input" placeholder="مثال: أخبار، دروس…"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();submitCategory();}">
+        </div>
+        <div style="margin-bottom:1.25rem">
+            <label style="display:block; font-size:0.8125rem; font-weight:500; color:var(--color-text-secondary); margin-bottom:0.4rem">اللون</label>
+            <div style="display:flex; align-items:center; gap:0.75rem">
+                <input type="color" id="catColor" value="#22d3ee"
+                       style="width:40px; height:36px; border:1px solid var(--color-slate-border); border-radius:6px; background:var(--color-surface-900); cursor:pointer; padding:2px">
+                <span style="font-size:0.8125rem; color:var(--color-text-muted)">اختر لون التصنيف</span>
+            </div>
+        </div>
+        <p id="catError" style="font-size:0.8125rem; color:var(--color-danger); margin-bottom:0.75rem; min-height:1.2em"></p>
+        <div style="display:flex; gap:0.75rem; justify-content:flex-end">
+            <button type="button" onclick="closeCategoryModal()" class="btn btn-outline btn-sm">إلغاء</button>
+            <button type="button" id="catSubmitBtn" onclick="submitCategory()" class="btn btn-primary btn-sm">حفظ</button>
+        </div>
+    </div>
+</div>
+
+{{-- Post Type Modal --}}
+<div id="postTypeModal"
+     style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem">
+    <div style="background:var(--color-surface-800); border:1px solid var(--color-slate-border); border-radius:14px; padding:1.5rem; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem">
+            <h3 style="font-size:1rem; font-weight:700; color:var(--color-text-primary); margin:0">نوع جديد</h3>
+            <button type="button" onclick="closePostTypeModal()"
+                    style="background:none; border:none; color:var(--color-text-muted); cursor:pointer; padding:0.25rem; border-radius:4px; line-height:1">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div style="margin-bottom:1rem">
+            <label style="display:block; font-size:0.8125rem; font-weight:500; color:var(--color-text-secondary); margin-bottom:0.4rem">
+                اسم النوع <span style="color:var(--color-danger)">*</span>
+            </label>
+            <input type="text" id="postTypeName" class="form-input" placeholder="مثال: سؤال، درس، مراجعة…"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();submitPostType();}">
+        </div>
+        <div style="margin-bottom:1.25rem">
+            <label style="display:block; font-size:0.8125rem; font-weight:500; color:var(--color-text-secondary); margin-bottom:0.4rem">اللون</label>
+            <div style="display:flex; align-items:center; gap:0.75rem">
+                <input type="color" id="postTypeColor" value="#22d3ee"
+                       style="width:40px; height:36px; border:1px solid var(--color-slate-border); border-radius:6px; background:var(--color-surface-900); cursor:pointer; padding:2px">
+                <span style="font-size:0.8125rem; color:var(--color-text-muted)">اختر لون النوع</span>
+            </div>
+        </div>
+        <p id="postTypeError" style="font-size:0.8125rem; color:var(--color-danger); margin-bottom:0.75rem; min-height:1.2em"></p>
+        <div style="display:flex; gap:0.75rem; justify-content:flex-end">
+            <button type="button" onclick="closePostTypeModal()" class="btn btn-outline btn-sm">إلغاء</button>
+            <button type="button" id="postTypeSubmitBtn" onclick="submitPostType()" class="btn btn-primary btn-sm">حفظ</button>
+        </div>
+    </div>
+</div>
+
+{{-- Tag Modal --}}
+<div id="tagModal"
+     style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem">
+    <div style="background:var(--color-surface-800); border:1px solid var(--color-slate-border); border-radius:14px; padding:1.5rem; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem">
+            <h3 style="font-size:1rem; font-weight:700; color:var(--color-text-primary); margin:0">وسم جديد</h3>
+            <button type="button" onclick="closeTagModal()"
+                    style="background:none; border:none; color:var(--color-text-muted); cursor:pointer; padding:0.25rem; border-radius:4px; line-height:1">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div style="margin-bottom:1rem">
+            <label style="display:block; font-size:0.8125rem; font-weight:500; color:var(--color-text-secondary); margin-bottom:0.4rem">
+                اسم الوسم <span style="color:var(--color-danger)">*</span>
+            </label>
+            <input type="text" id="tagName" class="form-input" placeholder="مثال: Laravel، JavaScript…"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();submitTag();}">
+        </div>
+        <div style="margin-bottom:1.25rem">
+            <label style="display:block; font-size:0.8125rem; font-weight:500; color:var(--color-text-secondary); margin-bottom:0.4rem">اللون</label>
+            <div style="display:flex; align-items:center; gap:0.75rem">
+                <input type="color" id="tagColor" value="#22d3ee"
+                       style="width:40px; height:36px; border:1px solid var(--color-slate-border); border-radius:6px; background:var(--color-surface-900); cursor:pointer; padding:2px">
+                <span style="font-size:0.8125rem; color:var(--color-text-muted)">اختر لون الوسم</span>
+            </div>
+        </div>
+        <p id="tagError" style="font-size:0.8125rem; color:var(--color-danger); margin-bottom:0.75rem; min-height:1.2em"></p>
+        <div style="display:flex; gap:0.75rem; justify-content:flex-end">
+            <button type="button" onclick="closeTagModal()" class="btn btn-outline btn-sm">إلغاء</button>
+            <button type="button" id="tagSubmitBtn" onclick="submitTag()" class="btn btn-primary btn-sm">حفظ</button>
+        </div>
+    </div>
+</div>
+
+@endif
+@endpush
+
 @push('scripts')
 <script>
 const bodyEl = document.getElementById('body');
@@ -209,7 +347,6 @@ function insertMarkdown(before, after, placeholder) {
     bodyEl.setRangeText(text, start, end, 'select');
     bodyEl.focus();
     if (!bodyEl.value.substring(start, end)) {
-        // Move cursor inside markers
         bodyEl.selectionStart = start + before.length;
         bodyEl.selectionEnd   = start + before.length + placeholder.length;
     }
@@ -218,15 +355,13 @@ function insertMarkdown(before, after, placeholder) {
 function insertYoutube() {
     const url = prompt('Paste the YouTube video URL:');
     if (!url) return;
-    // Extract video ID from various YouTube URL formats
     const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
     if (!match) {
         alert('Could not find a valid YouTube video ID. Please check the URL.');
         return;
     }
-    const id    = match[1];
-    const tag   = `\n[youtube:${id}]\n`;
-    const pos   = bodyEl.selectionStart;
+    const tag = `\n[youtube:${match[1]}]\n`;
+    const pos = bodyEl.selectionStart;
     bodyEl.setRangeText(tag, pos, pos, 'end');
     bodyEl.focus();
 }
@@ -259,5 +394,151 @@ function uploadInlineImage(input) {
             input.value = '';
         });
 }
+
+// ── Post Type Modal ───────────────────────────────────────────────────────────
+function openPostTypeModal() {
+    document.getElementById('postTypeModal').style.display = 'flex';
+    document.getElementById('postTypeName').focus();
+}
+function closePostTypeModal() {
+    document.getElementById('postTypeModal').style.display = 'none';
+    document.getElementById('postTypeName').value = '';
+    document.getElementById('postTypeColor').value = '#22d3ee';
+    document.getElementById('postTypeError').textContent = '';
+}
+function submitPostType() {
+    const name  = document.getElementById('postTypeName').value.trim();
+    const color = document.getElementById('postTypeColor').value;
+    const errEl = document.getElementById('postTypeError');
+    if (!name) { errEl.textContent = 'الاسم مطلوب.'; return; }
+
+    const btn = document.getElementById('postTypeSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ…';
+
+    fetch('{{ route("post_types.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({ name, color }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) { errEl.textContent = data.error; return; }
+        const sel = document.getElementById('type');
+        const opt = new Option(data.name, data.slug, true, true);
+        opt.dataset.color = data.color;
+        sel.appendChild(opt);
+        closePostTypeModal();
+    })
+    .catch(() => { errEl.textContent = 'حدث خطأ، حاول مرة أخرى.'; })
+    .finally(() => { btn.disabled = false; btn.textContent = 'حفظ'; });
+}
+
+// ── Category Modal ────────────────────────────────────────────────────────────
+function openCategoryModal() {
+    document.getElementById('categoryModal').style.display = 'flex';
+    document.getElementById('catName').focus();
+}
+function closeCategoryModal() {
+    document.getElementById('categoryModal').style.display = 'none';
+    document.getElementById('catName').value = '';
+    document.getElementById('catColor').value = '#22d3ee';
+    document.getElementById('catError').textContent = '';
+}
+function submitCategory() {
+    const name  = document.getElementById('catName').value.trim();
+    const color = document.getElementById('catColor').value;
+    const errEl = document.getElementById('catError');
+    if (!name) { errEl.textContent = 'الاسم مطلوب.'; return; }
+
+    const btn = document.getElementById('catSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ…';
+
+    fetch('{{ route("categories.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({ name, color }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) { errEl.textContent = data.error; return; }
+        const sel = document.getElementById('category_id');
+        const opt = new Option(data.name, data.id, true, true);
+        sel.appendChild(opt);
+        closeCategoryModal();
+    })
+    .catch(() => { errEl.textContent = 'حدث خطأ، حاول مرة أخرى.'; })
+    .finally(() => { btn.disabled = false; btn.textContent = 'حفظ'; });
+}
+// ── Tag Modal ─────────────────────────────────────────────────────────────────
+function openTagModal() {
+    document.getElementById('tagModal').style.display = 'flex';
+    document.getElementById('tagName').focus();
+}
+function closeTagModal() {
+    document.getElementById('tagModal').style.display = 'none';
+    document.getElementById('tagName').value = '';
+    document.getElementById('tagColor').value = '#22d3ee';
+    document.getElementById('tagError').textContent = '';
+}
+function submitTag() {
+    const name  = document.getElementById('tagName').value.trim();
+    const color = document.getElementById('tagColor').value;
+    const errEl = document.getElementById('tagError');
+    if (!name) { errEl.textContent = 'الاسم مطلوب.'; return; }
+
+    const btn = document.getElementById('tagSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ…';
+
+    fetch('{{ route("tags.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({ name, color }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) { errEl.textContent = data.error; return; }
+        // Add new tag checkbox to the tags container
+        const container = document.getElementById('tagsContainer');
+        const label = document.createElement('label');
+        label.style.cssText = 'display:flex; align-items:center; gap:0.35rem; cursor:pointer';
+        label.innerHTML = `
+            <input type="checkbox" name="tags[]" value="${data.id}" checked
+                   style="accent-color:var(--color-cyan-500); width:14px; height:14px">
+            <span class="tag-pill" style="background:rgba(34,211,238,0.12); border-color:rgba(34,211,238,0.4); color:var(--color-cyan-400)">
+                ${data.name}
+            </span>`;
+        container.appendChild(label);
+        closeTagModal();
+    })
+    .catch(() => { errEl.textContent = 'حدث خطأ، حاول مرة أخرى.'; })
+    .finally(() => { btn.disabled = false; btn.textContent = 'حفظ'; });
+}
+
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('categoryModal');
+    if (modal && e.target === modal) closeCategoryModal();
+    const tagModal = document.getElementById('tagModal');
+    if (tagModal && e.target === tagModal) closeTagModal();
+    const postTypeModal = document.getElementById('postTypeModal');
+    if (postTypeModal && e.target === postTypeModal) closePostTypeModal();
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeCategoryModal(); closeTagModal(); closePostTypeModal(); }
+});
 </script>
 @endpush

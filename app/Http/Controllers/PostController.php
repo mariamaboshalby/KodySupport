@@ -95,7 +95,8 @@ class PostController extends Controller
         $this->authorize('create', Post::class);
         $categories = Category::active()->roots()->get();
         $tags       = Tag::orderBy('name')->get();
-        return view('posts.create', compact('categories', 'tags'));
+        $postTypes  = \App\Models\PostType::ordered()->get();
+        return view('posts.create', compact('categories', 'tags', 'postTypes'));
     }
 
     public function store(Request $request)
@@ -107,7 +108,7 @@ class PostController extends Controller
             'body'        => 'required|string|min:10',
             'excerpt'     => 'nullable|string|max:500',
             'category_id' => 'nullable|exists:categories,id',
-            'type'        => 'required|in:post,announcement,documentation,changelog',
+            'type'        => 'required|string|exists:post_types,slug',
             'status'      => 'required|in:draft,published',
             'tags'        => 'nullable|array',
             'tags.*'      => 'exists:tags,id',
@@ -137,7 +138,8 @@ class PostController extends Controller
         $this->authorize('update', $post);
         $categories = Category::active()->roots()->get();
         $tags       = Tag::orderBy('name')->get();
-        return view('posts.edit', compact('post', 'categories', 'tags'));
+        $postTypes  = \App\Models\PostType::ordered()->get();
+        return view('posts.edit', compact('post', 'categories', 'tags', 'postTypes'));
     }
 
     public function update(Request $request, Post $post)
@@ -149,7 +151,7 @@ class PostController extends Controller
             'body'        => 'required|string|min:10',
             'excerpt'     => 'nullable|string|max:500',
             'category_id' => 'nullable|exists:categories,id',
-            'type'        => 'required|in:post,announcement,documentation,changelog',
+            'type'        => 'required|string|exists:post_types,slug',
             'status'      => 'required|in:draft,published',
             'tags'        => 'nullable|array',
             'tags.*'      => 'exists:tags,id',
