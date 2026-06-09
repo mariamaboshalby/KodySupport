@@ -26,6 +26,12 @@
                 </svg>
                 تذكرة جديدة
             </a>
+            @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.ticket-types.index') }}" class="btn btn-ghost btn-sm">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+                إدارة الأنواع
+            </a>
+            @endif
         </div>
     </div>
 
@@ -79,18 +85,17 @@
         </select>
 
         {{-- Visit Type Filter --}}
-        <select name="visit_type" class="form-select" style="min-width:160px; width:auto">
+        <select name="ticket_type_id" class="form-select" style="min-width:160px; width:auto">
             <option value="">كل الأنواع</option>
-            <option value="technical_support" {{ request('visit_type') === 'technical_support' ? 'selected' : '' }}>دعم تقني</option>
-            <option value="consultation"      {{ request('visit_type') === 'consultation'      ? 'selected' : '' }}>استشارة</option>
-            <option value="installation"      {{ request('visit_type') === 'installation'      ? 'selected' : '' }}>تركيب</option>
-            <option value="maintenance"       {{ request('visit_type') === 'maintenance'       ? 'selected' : '' }}>صيانة</option>
-            <option value="training"          {{ request('visit_type') === 'training'          ? 'selected' : '' }}>تدريب</option>
-            <option value="other"             {{ request('visit_type') === 'other'             ? 'selected' : '' }}>أخرى</option>
+            @foreach($ticketTypes as $type)
+                <option value="{{ $type->id }}" {{ request('ticket_type_id') == $type->id ? 'selected' : '' }}>
+                    {{ $type->name }}
+                </option>
+            @endforeach
         </select>
 
         <button type="submit" class="btn btn-outline">بحث</button>
-        @if(request()->hasAny(['q', 'status', 'visit_type']))
+        @if(request()->hasAny(['q', 'status', 'ticket_type_id', 'visit_type']))
             <a href="{{ route('tickets.index') }}" class="btn btn-ghost" style="color:var(--color-text-muted)">مسح</a>
         @endif
     </form>
@@ -145,7 +150,7 @@
                             </td>
 
                             <td style="padding:0.875rem 1rem; white-space:nowrap; color:var(--color-text-secondary)">
-                                {{ $ticket->visit_type_label }}
+                                {{ $ticket->ticketType?->name ?? $ticket->visit_type_label }}
                             </td>
 
                             <td style="padding:0.875rem 1rem; white-space:nowrap">

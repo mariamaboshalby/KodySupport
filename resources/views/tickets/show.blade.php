@@ -59,7 +59,7 @@
 
                     <div>
                         <div style="font-size:0.75rem; color:var(--color-text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.3rem">نوع الزيارة</div>
-                        <div style="color:var(--color-text-primary); font-size:0.9375rem">{{ $ticket->visit_type_label }}</div>
+                        <div style="color:var(--color-text-primary); font-size:0.9375rem">{{ $ticket->ticketType?->name ?? $ticket->visit_type_label }}</div>
                     </div>
 
                     @if($ticket->address)

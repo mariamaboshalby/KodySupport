@@ -93,7 +93,7 @@
                         <path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/>
                         <rect x="1" y="5" width="22" height="14" rx="3"/>
                     </svg>
-                    احجز تذكرة
+                    <span data-i18n="ticket_book_btn">احجز تذكرة</span>
                 </a>
                 <a href="{{ route('login') }}" class="btn btn-ghost btn-sm" data-i18n="sign_in">تسجيل الدخول</a>
                 <a href="{{ route('register') }}" class="btn btn-primary btn-sm" data-i18n="join">انضم</a>
@@ -105,6 +105,14 @@
 
                 <a href="{{ route('bookmarks.index') }}" class="btn btn-ghost btn-icon" data-i18n-title="bookmarks" title="المحفوظات">
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                </a>
+
+                <a href="{{ route('tickets.create') }}" class="btn btn-outline btn-sm" data-i18n-title="ticket_book_btn" title="احجز تذكرة دعم">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/>
+                        <rect x="1" y="5" width="22" height="14" rx="3"/>
+                    </svg>
+                    <span data-i18n="ticket_book_btn">احجز تذكرة</span>
                 </a>
 
                 {{-- User dropdown --}}
@@ -137,13 +145,15 @@
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
                             <span data-i18n="saved_posts">المحفوظات</span>
                         </a>
-                        <a href="{{ route('tickets.index') }}" class="dropdown-item">
+                        @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.tickets.index') }}" class="dropdown-item">
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/>
                                 <rect x="1" y="5" width="22" height="14" rx="3"/>
                             </svg>
-                            <span>إدارة التذاكر</span>
+                            <span data-i18n="ticket_manage">إدارة التذاكر</span>
                         </a>
+                        @endif
                         <div class="dropdown-divider"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

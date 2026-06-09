@@ -79,6 +79,131 @@
     </div>
 </div>
 
+{{-- ── Tickets Section ─────────────────────────────────────────────────── --}}
+<div style="margin-bottom:2rem">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.875rem">
+        <h2 style="font-size:1rem; font-weight:700; color:var(--color-text-primary); display:flex; align-items:center; gap:0.5rem">
+            <svg width="17" height="17" fill="none" stroke="var(--color-cyan-400)" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/>
+                <rect x="1" y="5" width="22" height="14" rx="3"/>
+            </svg>
+            تذاكر الحجز
+        </h2>
+        <a href="{{ route('admin.tickets.index') }}" class="btn btn-ghost btn-sm">عرض الكل</a>
+    </div>
+
+    {{-- Ticket Stats --}}
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.875rem; margin-bottom:1rem">
+        <div style="background:var(--color-surface-800); border:1px solid var(--color-slate-border); border-radius:var(--radius-card); padding:1rem; display:flex; align-items:center; gap:0.75rem">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(34,211,238,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="17" height="17" fill="none" stroke="#22d3ee" stroke-width="2" viewBox="0 0 24 24"><path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/><rect x="1" y="5" width="22" height="14" rx="3"/></svg>
+            </div>
+            <div>
+                <div style="font-size:1.375rem;font-weight:700;color:var(--color-text-primary);line-height:1">{{ $stats['tickets'] }}</div>
+                <div style="font-size:0.75rem;color:var(--color-text-muted)">إجمالي التذاكر</div>
+            </div>
+        </div>
+        <div style="background:var(--color-surface-800); border:1px solid rgba(245,158,11,0.25); border-radius:var(--radius-card); padding:1rem; display:flex; align-items:center; gap:0.75rem">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(245,158,11,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="17" height="17" fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+                <div style="font-size:1.375rem;font-weight:700;color:#f59e0b;line-height:1">{{ $stats['tickets_pending'] }}</div>
+                <div style="font-size:0.75rem;color:var(--color-text-muted)">قيد الانتظار</div>
+            </div>
+        </div>
+        <div style="background:var(--color-surface-800); border:1px solid rgba(34,211,238,0.15); border-radius:var(--radius-card); padding:1rem; display:flex; align-items:center; gap:0.75rem">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(34,211,238,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="17" height="17" fill="none" stroke="#22d3ee" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div>
+                <div style="font-size:1.375rem;font-weight:700;color:var(--color-cyan-400);line-height:1">{{ $stats['tickets_today'] }}</div>
+                <div style="font-size:0.75rem;color:var(--color-text-muted)">اليوم</div>
+            </div>
+        </div>
+        <div style="background:var(--color-surface-800); border:1px solid rgba(16,185,129,0.2); border-radius:var(--radius-card); padding:1rem; display:flex; align-items:center; gap:0.75rem">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="17" height="17" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+                <div style="font-size:1.375rem;font-weight:700;color:#10b981;line-height:1">{{ $stats['tickets_done'] }}</div>
+                <div style="font-size:0.75rem;color:var(--color-text-muted)">مكتملة</div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Recent Tickets Table --}}
+    @if($recentTickets->isNotEmpty())
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>رقم التذكرة</th>
+                    <th>العميل</th>
+                    <th>الهاتف</th>
+                    <th>نوع الزيارة</th>
+                    <th>التكلفة</th>
+                    <th>الحالة</th>
+                    <th>التاريخ</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($recentTickets as $ticket)
+                <tr>
+                    <td>
+                        <span style="font-family:var(--font-mono);font-size:0.8rem;color:var(--color-cyan-400)">
+                            {{ $ticket->ticket_number }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-weight:500;color:var(--color-text-primary)">{{ $ticket->name }}</div>
+                        @if($ticket->company_name)
+                            <div style="font-size:0.75rem;color:var(--color-text-muted)">{{ $ticket->company_name }}</div>
+                        @endif
+                    </td>
+                    <td style="direction:ltr;text-align:right;font-size:0.8125rem">{{ $ticket->phone }}</td>
+                    <td style="font-size:0.8125rem">{{ $ticket->ticketType?->name ?? $ticket->visit_type_label }}</td>
+                    <td>
+                        @if($ticket->expected_cost)
+                            <span style="color:var(--color-success);font-weight:500;font-size:0.8125rem">
+                                {{ number_format($ticket->expected_cost, 0) }} ج.م
+                            </span>
+                        @else
+                            <span style="color:var(--color-text-muted)">—</span>
+                        @endif
+                    </td>
+                    <td>
+                        <span style="display:inline-flex;align-items:center;gap:0.3rem;
+                                     padding:0.15rem 0.55rem;border-radius:999px;font-size:0.75rem;font-weight:600;
+                                     background:{{ $ticket->status_color }}18;color:{{ $ticket->status_color }};
+                                     border:1px solid {{ $ticket->status_color }}33">
+                            <span style="width:5px;height:5px;border-radius:50%;background:{{ $ticket->status_color }}"></span>
+                            {{ $ticket->status_label }}
+                        </span>
+                    </td>
+                    <td style="font-size:0.75rem;white-space:nowrap">{{ $ticket->created_at->diffForHumans() }}</td>
+                    <td>
+                        <a href="{{ route('admin.tickets.show', $ticket) }}" class="btn btn-ghost btn-sm btn-icon" title="عرض التذكرة">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @else
+    <div style="background:var(--color-surface-800);border:1px solid var(--color-slate-border);border-radius:var(--radius-card);padding:2rem;text-align:center;color:var(--color-text-muted);font-size:0.875rem">
+        لا توجد تذاكر حتى الآن —
+        <a href="{{ route('tickets.create') }}" target="_blank" style="color:var(--color-cyan-400)">جرب إنشاء تذكرة</a>
+    </div>
+    @endif
+</div>
+
 {{-- ── Two-column layout ───────────────────────────────────────────────── --}}
 <div style="display:grid; grid-template-columns:1fr 380px; gap:1.5rem; margin-bottom:1.5rem">
 
