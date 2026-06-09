@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -50,6 +51,17 @@ Route::middleware('auth')->group(function () {
         return response()->json(['url' => asset('storage/' . $path)]);
     })->name('upload.image');
 });
+
+// ── Tickets (Public — لا يحتاج تسجيل دخول) ───────────────────────────────────
+Route::get('/book', [TicketController::class, 'create'])->name('tickets.create');
+Route::post('/book', [TicketController::class, 'store'])->name('tickets.store');
+Route::get('/book/success/{number}', [TicketController::class, 'success'])->name('tickets.success');
+
+// ── Tickets Dashboard (يتطلب تسجيل الدخول — redirects للـ admin) ─────────────
+// التذاكر اتنقلت لـ /admin/tickets — الـ links القديمة تعمل redirect
+Route::redirect('/dashboard/tickets', '/admin/tickets')->name('tickets.index');
+Route::get('/dashboard/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show')->middleware('auth');
+Route::patch('/dashboard/tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status')->middleware('auth');
 
 // ── Breeze Auth Routes ────────────────────────────────────────────────────────
 require __DIR__ . '/auth.php';
