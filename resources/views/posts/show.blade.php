@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="site-container" style="padding-top:1.5rem; padding-bottom:3rem">
-    <div style="display:grid; grid-template-columns:1fr 280px; gap:1.5rem; align-items:start">
+    <div class="layout-2col-narrow">
 
         {{-- ── Main Content ──────────────────────────────────────────────── --}}
         <div>
@@ -30,7 +30,7 @@
                          style="width:100%; height:100%; object-fit:cover">
                 </div>
                 @endif
-                <div style="padding:1.75rem 2rem">
+                <div style="padding:1.75rem 2rem" class="post-article-body">
 
                     {{-- Badges --}}
                     <div style="display:flex; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem">

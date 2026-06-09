@@ -217,13 +217,25 @@
             margin-top: 0.25rem;
         }
 
-        /* Grid helpers */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        /* ── Grid helpers ──────────────────────────────────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Dashboard two-column layout */
+        .admin-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.5rem;
+        }
 
         /* Color dot */
         .color-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
-        /* Filter bar */
+        /* ── Filter bar ─────────────────────────────────────────────────── */
         .filter-bar {
             background: var(--color-surface-800);
             border: 1px solid var(--color-slate-border);
@@ -256,14 +268,100 @@
         /* Inline form (for actions in tables) */
         .action-form { display: inline; }
 
+        /* ── Page header flex on mobile ─────────────────────────────────── */
+        .admin-page-header-actions {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        /* ── Responsive ─────────────────────────────────────────────────── */
+
+        /* Tablet: collapse dashboard grid */
+        @media (max-width: 960px) {
+            .admin-grid-2col { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Mobile (≤ 768px) */
         @media (max-width: 768px) {
-            .admin-sidebar { transform: translateX(100%); }
+
+            /* Sidebar: slide off-screen, toggled by JS */
+            .admin-sidebar {
+                transform: translateX(100%);
+                transition: transform 0.25s ease;
+            }
+            .admin-sidebar.open { transform: translateX(0); }
             .admin-main { margin-right: 0; }
+
+            /* Dark overlay behind sidebar */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.6);
+                z-index: 45;
+            }
+            .sidebar-overlay.open { display: block; }
+
+            /* Show hamburger button */
+            .mobile-menu-btn { display: flex !important; }
+
+            /* Content padding */
+            .admin-content { padding: 1rem 0.875rem; }
+            .admin-topbar  { padding: 0 1rem; }
+
+            /* Stat cards: 2 columns */
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.625rem; }
+
+            /* Tables: horizontal scroll */
+            .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+            /* Hide less important table columns */
+            .admin-table .col-hide-mobile { display: none; }
+
+            /* Filter bar stacks vertically */
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+            .filter-bar input,
+            .filter-bar select { width: 100%; }
+
+            /* Page header: stack title + button */
+            .admin-page-header-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            /* Dashboard ticket stats: 2 cols */
+            .ticket-stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .admin-content { padding: 0.75rem 0.625rem; }
+
+            /* Topbar: hide user name on tiny screens */
+            .topbar-username { display: none; }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu-btn { display: none !important; }
         }
     </style>
 </head>
 <body>
 <div class="admin-layout">
+
+    {{-- Mobile sidebar overlay --}}
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleAdminSidebar()"></div>
 
     {{-- ── Sidebar ──────────────────────────────────────────────────────── --}}
     <aside class="admin-sidebar">
@@ -352,11 +450,25 @@
     <div class="admin-main">
         {{-- Top bar --}}
         <header class="admin-topbar">
-            <div style="font-size:0.9375rem; font-weight:600; color:var(--color-text-secondary)">
-                @yield('topbar-title', 'لوحة التحكم')
+            <div style="display:flex; align-items:center; gap:0.75rem">
+                {{-- Mobile menu toggle --}}
+                <button class="mobile-menu-btn"
+                        style="display:none; align-items:center; justify-content:center; width:36px; height:36px;
+                               border:1px solid var(--color-slate-border); border-radius:8px; background:transparent;
+                               color:var(--color-text-secondary); cursor:pointer"
+                        onclick="toggleAdminSidebar()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div style="font-size:0.9375rem; font-weight:600; color:var(--color-text-secondary)">
+                    @yield('topbar-title', 'لوحة التحكم')
+                </div>
             </div>
             <div style="display:flex; align-items:center; gap:0.75rem">
-                <span style="font-size:0.8125rem; color:var(--color-text-muted)">{{ auth()->user()->display_name }}</span>
+                <span style="font-size:0.8125rem; color:var(--color-text-muted)" class="topbar-username">{{ auth()->user()->display_name }}</span>
                 <img src="{{ auth()->user()->avatar_url }}" alt="" style="width:32px;height:32px;border-radius:50%;border:2px solid var(--color-slate-border)">
             </div>
         </header>
@@ -382,6 +494,13 @@
 </div>
 
 <script>
+function toggleAdminSidebar() {
+    const sidebar = document.querySelector('.admin-sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide) lucide.createIcons();
 });

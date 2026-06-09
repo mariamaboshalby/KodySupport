@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div class="admin-page-header" style="display:flex; align-items:flex-start; justify-content:space-between">
+<div class="admin-page-header admin-page-header-actions">
     <div>
         <h1>أنواع المقالات</h1>
         <p>إدارة أنواع المحتوى مثل: نقاش، إعلان، توثيق…</p>
@@ -42,19 +42,19 @@
     <table class="admin-table">
         <thead>
             <tr>
-                <th>#</th>
+                <th class="col-hide-mobile">#</th>
                 <th>الاسم</th>
-                <th>Slug</th>
-                <th>اللون</th>
-                <th>افتراضي</th>
-                <th>الترتيب</th>
+                <th class="col-hide-mobile">Slug</th>
+                <th class="col-hide-mobile">اللون</th>
+                <th class="col-hide-mobile">افتراضي</th>
+                <th class="col-hide-mobile">الترتيب</th>
                 <th>الإجراءات</th>
             </tr>
         </thead>
         <tbody>
             @forelse($postTypes as $type)
             <tr>
-                <td style="color:var(--color-text-muted); font-size:0.75rem">{{ $type->id }}</td>
+                <td class="col-hide-mobile" style="color:var(--color-text-muted); font-size:0.75rem">{{ $type->id }}</td>
                 <td>
                     <span style="display:inline-flex; align-items:center; gap:0.4rem; font-weight:600; font-size:0.875rem; color:{{ $type->color }}">
                         <span class="color-dot" style="background:{{ $type->color }}"></span>

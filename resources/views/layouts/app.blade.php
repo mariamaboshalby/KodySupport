@@ -96,7 +96,6 @@
                     <span data-i18n="ticket_book_btn">احجز تذكرة</span>
                 </a>
                 <a href="{{ route('login') }}" class="btn btn-ghost btn-sm" data-i18n="sign_in">تسجيل الدخول</a>
-                <a href="{{ route('register') }}" class="btn btn-primary btn-sm" data-i18n="join">انضم</a>
             @else
                 <a href="{{ route('posts.create') }}" class="btn btn-primary btn-sm">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>

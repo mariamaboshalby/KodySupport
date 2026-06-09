@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="site-container" style="padding-top:1.5rem; padding-bottom:3rem">
-    <div style="display:grid; grid-template-columns:1fr 300px; gap:1.5rem; align-items:start">
+    <div class="layout-2col">
 
         <div>
             {{-- Category Header --}}
