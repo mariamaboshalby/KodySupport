@@ -88,6 +88,13 @@
             </button>
 
             @guest
+                <a href="{{ route('tickets.create') }}" class="btn btn-outline btn-sm">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/>
+                        <rect x="1" y="5" width="22" height="14" rx="3"/>
+                    </svg>
+                    احجز تذكرة
+                </a>
                 <a href="{{ route('login') }}" class="btn btn-ghost btn-sm" data-i18n="sign_in">تسجيل الدخول</a>
                 <a href="{{ route('register') }}" class="btn btn-primary btn-sm" data-i18n="join">انضم</a>
             @else
@@ -129,6 +136,13 @@
                         <a href="{{ route('bookmarks.index') }}" class="dropdown-item">
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
                             <span data-i18n="saved_posts">المحفوظات</span>
+                        </a>
+                        <a href="{{ route('tickets.index') }}" class="dropdown-item">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/>
+                                <rect x="1" y="5" width="22" height="14" rx="3"/>
+                            </svg>
+                            <span>إدارة التذاكر</span>
                         </a>
                         <div class="dropdown-divider"></div>
                         <form method="POST" action="{{ route('logout') }}">

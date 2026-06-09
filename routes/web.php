@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -65,48 +66,16 @@ Route::middleware('auth')->group(function () {
     })->name('upload.image');
 });
 
-// ── Admin Routes ─────────────────────────────────────────────────────────────
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+// ── Tickets (Public — لا يحتاج تسجيل دخول) ───────────────────────────────────
+Route::get('/book', [TicketController::class, 'create'])->name('tickets.create');
+Route::post('/book', [TicketController::class, 'store'])->name('tickets.store');
+Route::get('/book/success/{number}', [TicketController::class, 'success'])->name('tickets.success');
 
-    // Users
-    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-    Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
-    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
-
-    // Posts
-    Route::get('/posts', [AdminPostController::class, 'index'])->name('posts.index');
-    Route::patch('/posts/{post}/pin', [AdminPostController::class, 'togglePin'])->name('posts.pin');
-    Route::patch('/posts/{post}/lock', [AdminPostController::class, 'toggleLock'])->name('posts.lock');
-    Route::patch('/posts/{post}/status', [AdminPostController::class, 'updateStatus'])->name('posts.status');
-    Route::delete('/posts/{post}', [AdminPostController::class, 'destroy'])->name('posts.destroy');
-    Route::patch('/posts/{id}/restore', [AdminPostController::class, 'restore'])->name('posts.restore');
-    Route::delete('/posts/{id}/force', [AdminPostController::class, 'forceDelete'])->name('posts.force-delete');
-
-    // Comments
-    Route::get('/comments', [AdminCommentController::class, 'index'])->name('comments.index');
-    Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
-    Route::patch('/comments/{id}/restore', [AdminCommentController::class, 'restore'])->name('comments.restore');
-    Route::delete('/comments/{id}/force', [AdminCommentController::class, 'forceDelete'])->name('comments.force-delete');
-
-    // Categories
-    Route::get('/categories', [AdminTaxonomyController::class, 'categoriesIndex'])->name('categories.index');
-    Route::post('/categories', [AdminTaxonomyController::class, 'categoryStore'])->name('categories.store');
-    Route::patch('/categories/{category}', [AdminTaxonomyController::class, 'categoryUpdate'])->name('categories.update');
-    Route::delete('/categories/{category}', [AdminTaxonomyController::class, 'categoryDestroy'])->name('categories.destroy');
-
-    // Tags
-    Route::get('/tags', [AdminTaxonomyController::class, 'tagsIndex'])->name('tags.index');
-    Route::post('/tags', [AdminTaxonomyController::class, 'tagStore'])->name('tags.store');
-    Route::patch('/tags/{tag}', [AdminTaxonomyController::class, 'tagUpdate'])->name('tags.update');
-    Route::delete('/tags/{tag}', [AdminTaxonomyController::class, 'tagDestroy'])->name('tags.destroy');
-
-    // Post Types
-    Route::get('/post-types', [AdminTaxonomyController::class, 'postTypesIndex'])->name('post-types.index');
-    Route::post('/post-types', [AdminTaxonomyController::class, 'postTypeStore'])->name('post-types.store');
-    Route::patch('/post-types/{postType}', [AdminTaxonomyController::class, 'postTypeUpdate'])->name('post-types.update');
-    Route::delete('/post-types/{postType}', [AdminTaxonomyController::class, 'postTypeDestroy'])->name('post-types.destroy');
-});
+// ── Tickets Dashboard (يتطلب تسجيل الدخول — redirects للـ admin) ─────────────
+// التذاكر اتنقلت لـ /admin/tickets — الـ links القديمة تعمل redirect
+Route::redirect('/dashboard/tickets', '/admin/tickets')->name('tickets.index');
+Route::get('/dashboard/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show')->middleware('auth');
+Route::patch('/dashboard/tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status')->middleware('auth');
 
 // ── Breeze Auth Routes ────────────────────────────────────────────────────────
 require __DIR__ . '/auth.php';
