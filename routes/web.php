@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminCommentController;
+use App\Http\Controllers\Admin\AdminPostController;
+use App\Http\Controllers\Admin\AdminTaxonomyController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
@@ -43,6 +48,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Categories (admin only)
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+
+    // Tags (admin only)
+    Route::post('/tags', [\App\Http\Controllers\TagController::class, 'store'])->name('tags.store');
+
+    // Post Types (admin only)
+    Route::post('/post-types', [\App\Http\Controllers\PostTypeController::class, 'store'])->name('post_types.store');
 
     // Image upload for post editor
     Route::post('/upload/image', function (Request $request) {

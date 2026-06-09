@@ -100,19 +100,17 @@ class Post extends Model
     {
         $body = $this->body;
 
-        // Escape HTML to prevent XSS first
-        $body = e($body);
+        // Extract special blocks BEFORE escaping so their syntax is not mangled
 
-        // Code blocks FIRST (before nl2br touches them): ```...```
-        // Replace newlines inside code blocks with a placeholder to protect them
+        // Code blocks: ```...```
         $codeBlocks = [];
         $body = preg_replace_callback('/```([\s\S]*?)```/', function ($m) use (&$codeBlocks) {
             $placeholder = '__CODEBLOCK_' . count($codeBlocks) . '__';
-            $codeBlocks[$placeholder] = '<pre><code>' . $m[1] . '</code></pre>';
+            $codeBlocks[$placeholder] = '<pre><code>' . e($m[1]) . '</code></pre>';
             return $placeholder;
         }, $body);
 
-        // YouTube embeds: [youtube:VIDEO_ID] — also protect from nl2br
+        // YouTube embeds: [youtube:VIDEO_ID]
         $ytBlocks = [];
         $body = preg_replace_callback('/\[youtube:([A-Za-z0-9_-]{11})\]/', function ($m) use (&$ytBlocks) {
             $placeholder = '__YTBLOCK_' . count($ytBlocks) . '__';
@@ -120,13 +118,16 @@ class Post extends Model
             return $placeholder;
         }, $body);
 
-        // Images: ![alt](url) — protect from nl2br
+        // Images: ![alt](url)
         $imgBlocks = [];
         $body = preg_replace_callback('/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/', function ($m) use (&$imgBlocks) {
             $placeholder = '__IMGBLOCK_' . count($imgBlocks) . '__';
-            $imgBlocks[$placeholder] = '<img src="' . $m[2] . '" alt="' . $m[1] . '" class="prose-img">';
+            $imgBlocks[$placeholder] = '<img src="' . e($m[2]) . '" alt="' . e($m[1]) . '" class="prose-img">';
             return $placeholder;
         }, $body);
+
+        // Now escape the remaining plain text to prevent XSS
+        $body = e($body);
 
         // Headings: ## and ### — protect as block
         $headingBlocks = [];
@@ -184,17 +185,22 @@ class Post extends Model
 
     public function getTypeColorAttribute(): string
     {
-        return match ($this->type) {
-            'announcement'  => '#f59e0b',
-            'documentation' => '#8b5cf6',
-            'changelog'     => '#10b981',
-            default         => '#22d3ee',
-        };
+        static $cache = [];
+        if (! isset($cache[$this->type])) {
+            $pt = \App\Models\PostType::where('slug', $this->type)->first();
+            $cache[$this->type] = $pt?->color ?? '#22d3ee';
+        }
+        return $cache[$this->type];
     }
 
     public function getTypeLabelAttribute(): string
     {
-        return ucfirst($this->type);
+        static $cache = [];
+        if (! isset($cache[$this->type])) {
+            $pt = \App\Models\PostType::where('slug', $this->type)->first();
+            $cache[$this->type] = $pt?->name ?? ucfirst($this->type);
+        }
+        return $cache[$this->type];
     }
 
     public function isBookmarkedBy(?User $user): bool
