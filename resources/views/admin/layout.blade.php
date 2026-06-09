@@ -310,6 +310,22 @@
                 أنواع المقالات
             </a>
 
+            <div class="nav-group-label" style="margin-top:0.75rem">الدعم</div>
+            <a href="{{ route('admin.tickets.index') }}" class="nav-item {{ request()->routeIs('admin.tickets.index') || request()->routeIs('admin.tickets.show') || request()->routeIs('admin.tickets.update-status') ? 'active' : '' }}">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/><rect x="1" y="5" width="22" height="14" rx="3"/></svg>
+                التذاكر
+                @php $pendingCount = \App\Models\Ticket::where('status','pending')->count(); @endphp
+                @if($pendingCount > 0)
+                    <span style="margin-right:auto;font-size:0.7rem;font-weight:700;background:rgba(245,158,11,0.2);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);padding:0.1rem 0.45rem;border-radius:999px">
+                        {{ $pendingCount }}
+                    </span>
+                @endif
+            </a>
+            <a href="{{ route('admin.ticket-types.index') }}" class="nav-item {{ request()->routeIs('admin.ticket-types.*') ? 'active' : '' }}">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+                أنواع التذاكر
+            </a>
+
             <div class="nav-group-label" style="margin-top:0.75rem">المستخدمون</div>
             <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>

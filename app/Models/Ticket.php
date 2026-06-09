@@ -9,7 +9,7 @@ class Ticket extends Model
 {
     protected $fillable = [
         'name', 'company_name', 'phone', 'address',
-        'visit_type', 'expected_cost', 'notes',
+        'ticket_type_id', 'visit_type', 'expected_cost', 'notes',
         'status', 'ticket_number', 'scheduled_at', 'assigned_to',
     ];
 
@@ -23,6 +23,11 @@ class Ticket extends Model
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function ticketType(): BelongsTo
+    {
+        return $this->belongsTo(TicketType::class);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

@@ -9,25 +9,30 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostType;
 use App\Models\Tag;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Vote;
-use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
         $stats = [
-            'users'         => User::count(),
-            'posts'         => Post::withTrashed()->count(),
-            'published'     => Post::where('status', 'published')->count(),
-            'drafts'        => Post::where('status', 'draft')->count(),
-            'comments'      => Comment::withTrashed()->count(),
-            'votes'         => Vote::count(),
-            'bookmarks'     => Bookmark::count(),
-            'categories'    => Category::count(),
-            'tags'          => Tag::count(),
-            'post_types'    => PostType::count(),
+            'users'           => User::count(),
+            'posts'           => Post::withTrashed()->count(),
+            'published'       => Post::where('status', 'published')->count(),
+            'drafts'          => Post::where('status', 'draft')->count(),
+            'comments'        => Comment::withTrashed()->count(),
+            'votes'           => Vote::count(),
+            'bookmarks'       => Bookmark::count(),
+            'categories'      => Category::count(),
+            'tags'            => Tag::count(),
+            'post_types'      => PostType::count(),
+            // إحصائيات التذاكر
+            'tickets'         => Ticket::count(),
+            'tickets_pending' => Ticket::where('status', 'pending')->count(),
+            'tickets_today'   => Ticket::whereDate('created_at', today())->count(),
+            'tickets_done'    => Ticket::where('status', 'completed')->count(),
         ];
 
         $recentPosts = Post::with(['author', 'category'])
@@ -49,6 +54,11 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
+        // أحدث التذاكر (قيد الانتظار أولاً)
+        $recentTickets = Ticket::latest()
+            ->take(6)
+            ->get();
+
         $newUsersThisMonth = User::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
@@ -59,7 +69,7 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact(
             'stats', 'recentPosts', 'recentUsers',
-            'recentComments', 'topPosts',
+            'recentComments', 'topPosts', 'recentTickets',
             'newUsersThisMonth', 'newPostsThisMonth'
         ));
     }

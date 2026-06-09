@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use App\Models\TicketType;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -11,21 +12,28 @@ class TicketController extends Controller
     // ── Public: عرض فورم الحجز ───────────────────────────────────────────────
     public function create()
     {
-        return view('tickets.create');
+        $ticketTypes = TicketType::active()->get();
+        return view('tickets.create', compact('ticketTypes'));
     }
 
     // ── Public: حفظ التذكرة الجديدة ─────────────────────────────────────────
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'          => 'required|string|max:150',
-            'company_name'  => 'nullable|string|max:200',
-            'phone'         => 'required|string|max:30',
-            'address'       => 'nullable|string|max:500',
-            'visit_type'    => 'required|in:technical_support,consultation,installation,maintenance,training,other',
-            'expected_cost' => 'nullable|numeric|min:0|max:9999999',
-            'notes'         => 'nullable|string|max:2000',
+            'name'           => 'required|string|max:150',
+            'company_name'   => 'nullable|string|max:200',
+            'phone'          => 'required|string|max:30',
+            'address'        => 'nullable|string|max:500',
+            'ticket_type_id' => 'required|exists:ticket_types,id',
+            'expected_cost'  => 'nullable|numeric|min:0|max:9999999',
+            'notes'          => 'nullable|string|max:2000',
         ]);
+
+        // إذا لم يدخل المستخدم تكلفة يدويًا، نأخذها من النوع
+        if (empty($validated['expected_cost'])) {
+            $type = TicketType::find($validated['ticket_type_id']);
+            $validated['expected_cost'] = $type?->expected_cost;
+        }
 
         $validated['ticket_number'] = Ticket::generateTicketNumber();
         $validated['status']        = 'pending';
@@ -47,16 +55,16 @@ class TicketController extends Controller
     {
         abort_unless(auth()->check(), 403);
 
-        $query = Ticket::latest();
+        $query = Ticket::with('ticketType')->latest();
 
         // فلتر بالحالة
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // فلتر بنوع الزيارة
-        if ($request->filled('visit_type')) {
-            $query->where('visit_type', $request->visit_type);
+        // فلتر بنوع التذكرة (الجديد من الـ DB)
+        if ($request->filled('ticket_type_id')) {
+            $query->where('ticket_type_id', $request->ticket_type_id);
         }
 
         // بحث بالاسم أو رقم التذكرة أو الشركة
@@ -80,7 +88,9 @@ class TicketController extends Controller
             'completed'   => Ticket::where('status', 'completed')->count(),
         ];
 
-        return view('tickets.index', compact('tickets', 'stats'));
+        $ticketTypes = TicketType::active()->get();
+
+        return view('tickets.index', compact('tickets', 'stats', 'ticketTypes'));
     }
 
     // ── Dashboard: عرض تذكرة واحدة ───────────────────────────────────────────
