@@ -28,26 +28,26 @@
     <table class="admin-table">
         <thead>
             <tr>
-                <th>#</th>
+                <th class="col-hide-mobile">#</th>
                 <th>الكاتب</th>
-                <th>المقال</th>
+                <th class="col-hide-mobile">المقال</th>
                 <th>التعليق</th>
-                <th style="text-align:center">الأصوات</th>
-                <th>التاريخ</th>
+                <th class="col-hide-mobile" style="text-align:center">الأصوات</th>
+                <th class="col-hide-mobile">التاريخ</th>
                 <th>الإجراءات</th>
             </tr>
         </thead>
         <tbody>
             @forelse($comments as $comment)
             <tr>
-                <td style="color:var(--color-text-muted); font-size:0.75rem">{{ $comment->id }}</td>
+                <td class="col-hide-mobile" style="color:var(--color-text-muted); font-size:0.75rem">{{ $comment->id }}</td>
                 <td>
                     <div style="display:flex; align-items:center; gap:0.5rem">
                         <img src="{{ $comment->author?->avatar_url }}" alt="" style="width:28px;height:28px;border-radius:50%;flex-shrink:0">
                         <span style="font-size:0.875rem; color:var(--color-text-primary)">{{ $comment->author?->display_name }}</span>
                     </div>
                 </td>
-                <td style="max-width:160px">
+                <td class="col-hide-mobile" style="max-width:160px">
                     @if($comment->post)
                     <a href="{{ route('posts.show', $comment->post) }}" target="_blank" style="font-size:0.8125rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block">
                         {{ $comment->post->title }}
@@ -67,8 +67,8 @@
                         <span class="status-badge status-trashed" style="margin-top:0.25rem">محذوف</span>
                     @endif
                 </td>
-                <td style="text-align:center; font-size:0.8125rem">{{ $comment->votes_count }}</td>
-                <td style="font-size:0.75rem; white-space:nowrap">{{ $comment->created_at->format('Y/m/d') }}</td>
+                <td class="col-hide-mobile" style="text-align:center; font-size:0.8125rem">{{ $comment->votes_count }}</td>
+                <td class="col-hide-mobile" style="font-size:0.75rem; white-space:nowrap">{{ $comment->created_at->format('Y/m/d') }}</td>
                 <td>
                     <div style="display:flex; align-items:center; gap:0.25rem">
                         @if($comment->trashed())

@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div class="admin-page-header" style="display:flex; align-items:flex-start; justify-content:space-between">
+<div class="admin-page-header admin-page-header-actions">
     <div>
         <h1>أنواع التذاكر</h1>
         <p>إدارة أنواع حجوزات الدعم مع التكلفة المتوقعة لكل نوع</p>
@@ -76,24 +76,24 @@
     <table class="admin-table">
         <thead>
             <tr>
-                <th style="width:50px">#</th>
+                <th class="col-hide-mobile" style="width:50px">#</th>
                 <th>اسم النوع</th>
-                <th>Slug</th>
+                <th class="col-hide-mobile">Slug</th>
                 <th>التكلفة المتوقعة</th>
-                <th>الترتيب</th>
+                <th class="col-hide-mobile">الترتيب</th>
                 <th>الحالة</th>
-                <th>التذاكر</th>
+                <th class="col-hide-mobile">التذاكر</th>
                 <th>الإجراءات</th>
             </tr>
         </thead>
         <tbody>
             @forelse($ticketTypes as $type)
             <tr>
-                <td style="color:var(--color-text-muted); font-size:0.75rem">{{ $type->id }}</td>
+                <td class="col-hide-mobile" style="color:var(--color-text-muted); font-size:0.75rem">{{ $type->id }}</td>
 
                 <td style="font-weight:600; color:var(--color-text-primary)">{{ $type->name }}</td>
 
-                <td><code style="font-size:0.8rem; color:var(--color-text-muted)">{{ $type->slug }}</code></td>
+                <td class="col-hide-mobile"><code style="font-size:0.8rem; color:var(--color-text-muted)">{{ $type->slug }}</code></td>
 
                 <td>
                     @if($type->expected_cost !== null)
@@ -106,7 +106,7 @@
                     @endif
                 </td>
 
-                <td style="font-size:0.8125rem; color:var(--color-text-muted)">{{ $type->sort_order }}</td>
+                <td class="col-hide-mobile" style="font-size:0.8125rem; color:var(--color-text-muted)">{{ $type->sort_order }}</td>
 
                 <td>
                     @if($type->is_active)
@@ -116,7 +116,7 @@
                     @endif
                 </td>
 
-                <td style="font-size:0.8125rem; color:var(--color-text-muted)">
+                <td class="col-hide-mobile" style="font-size:0.8125rem; color:var(--color-text-muted)">
                     {{ $type->tickets_count ?? $type->tickets()->count() }}
                 </td>
 

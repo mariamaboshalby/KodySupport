@@ -93,7 +93,7 @@
     </div>
 
     {{-- Ticket Stats --}}
-    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.875rem; margin-bottom:1rem">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:0.875rem; margin-bottom:1rem">
         <div style="background:var(--color-surface-800); border:1px solid var(--color-slate-border); border-radius:var(--radius-card); padding:1rem; display:flex; align-items:center; gap:0.75rem">
             <div style="width:36px;height:36px;border-radius:8px;background:rgba(34,211,238,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                 <svg width="17" height="17" fill="none" stroke="#22d3ee" stroke-width="2" viewBox="0 0 24 24"><path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/><rect x="1" y="5" width="22" height="14" rx="3"/></svg>
@@ -205,7 +205,7 @@
 </div>
 
 {{-- ── Two-column layout ───────────────────────────────────────────────── --}}
-<div style="display:grid; grid-template-columns:1fr 380px; gap:1.5rem; margin-bottom:1.5rem">
+<div class="admin-grid-2col" style="margin-bottom:1.5rem">
 
     {{-- Recent Posts --}}
     <div>
@@ -281,7 +281,7 @@
 </div>
 
 {{-- ── Bottom row ──────────────────────────────────────────────────────── --}}
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem">
+<div class="admin-grid-2col">
 
     {{-- Top Posts --}}
     <div>

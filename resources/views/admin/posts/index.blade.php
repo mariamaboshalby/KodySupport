@@ -31,22 +31,22 @@
     <table class="admin-table">
         <thead>
             <tr>
-                <th>#</th>
+                <th class="col-hide-mobile">#</th>
                 <th>العنوان</th>
-                <th>الكاتب</th>
+                <th class="col-hide-mobile">الكاتب</th>
                 <th>الحالة</th>
-                <th>النوع</th>
-                <th style="text-align:center">المشاهدات</th>
-                <th style="text-align:center">الأصوات</th>
-                <th style="text-align:center">التعليقات</th>
-                <th>التاريخ</th>
+                <th class="col-hide-mobile">النوع</th>
+                <th class="col-hide-mobile" style="text-align:center">المشاهدات</th>
+                <th class="col-hide-mobile" style="text-align:center">الأصوات</th>
+                <th class="col-hide-mobile" style="text-align:center">التعليقات</th>
+                <th class="col-hide-mobile">التاريخ</th>
                 <th>الإجراءات</th>
             </tr>
         </thead>
         <tbody>
             @forelse($posts as $post)
             <tr>
-                <td style="color:var(--color-text-muted); font-size:0.75rem">{{ $post->id }}</td>
+                <td class="col-hide-mobile" style="color:var(--color-text-muted); font-size:0.75rem">{{ $post->id }}</td>
                 <td style="max-width:220px">
                     <div style="display:flex; align-items:center; gap:0.375rem">
                         @if($post->is_pinned)
@@ -63,7 +63,7 @@
                     <div style="font-size:0.7rem; color:var(--color-text-muted)">{{ $post->category->name }}</div>
                     @endif
                 </td>
-                <td style="font-size:0.8125rem">{{ $post->author->display_name }}</td>
+                <td class="col-hide-mobile" style="font-size:0.8125rem">{{ $post->author->display_name }}</td>
                 <td>
                     @if($post->trashed())
                         <span class="status-badge status-trashed">محذوف</span>
@@ -73,13 +73,13 @@
                         </span>
                     @endif
                 </td>
-                <td>
+                <td class="col-hide-mobile">
                     <span style="background:rgba(34,211,238,0.08); color:var(--color-cyan-400); font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:999px; border:1px solid rgba(34,211,238,0.15)">{{ $post->type }}</span>
                 </td>
-                <td style="text-align:center; font-size:0.8125rem">{{ number_format($post->views_count) }}</td>
-                <td style="text-align:center; font-size:0.8125rem">{{ $post->votes_count }}</td>
-                <td style="text-align:center; font-size:0.8125rem">{{ $post->comments_count }}</td>
-                <td style="font-size:0.75rem; white-space:nowrap">{{ $post->created_at->format('Y/m/d') }}</td>
+                <td class="col-hide-mobile" style="text-align:center; font-size:0.8125rem">{{ number_format($post->views_count) }}</td>
+                <td class="col-hide-mobile" style="text-align:center; font-size:0.8125rem">{{ $post->votes_count }}</td>
+                <td class="col-hide-mobile" style="text-align:center; font-size:0.8125rem">{{ $post->comments_count }}</td>
+                <td class="col-hide-mobile" style="font-size:0.75rem; white-space:nowrap">{{ $post->created_at->format('Y/m/d') }}</td>
                 <td>
                     <div style="display:flex; align-items:center; gap:0.25rem; flex-wrap:wrap">
                         @if($post->trashed())

@@ -1,4 +1,4 @@
-<div style="display:grid; grid-template-columns:1fr 260px; gap:1.5rem; align-items:start">
+<div class="layout-2col-form">
 
     {{-- Left: main fields --}}
     <div>

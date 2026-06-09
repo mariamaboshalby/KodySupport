@@ -46,7 +46,7 @@
             @csrf
 
             {{-- Row 1: الاسم + اسم الشركة --}}
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.25rem">
+            <div class="form-row-2col" style="margin-bottom:1.25rem">
                 <div class="form-group" style="margin-bottom:0">
                     <label class="form-label" for="name">
                         <span data-i18n="ticket_full_name">الاسم الكامل</span>
@@ -83,7 +83,7 @@
             </div>
 
             {{-- Row 2: التليفون + نوع الزيارة --}}
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.25rem">
+            <div class="form-row-2col" style="margin-bottom:1.25rem">
                 <div class="form-group" style="margin-bottom:0">
                     <label class="form-label" for="phone">
                         <span data-i18n="ticket_phone">رقم الهاتف</span>

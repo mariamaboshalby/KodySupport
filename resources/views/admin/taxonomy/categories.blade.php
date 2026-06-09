@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div class="admin-page-header" style="display:flex; align-items:flex-start; justify-content:space-between">
+<div class="admin-page-header admin-page-header-actions">
     <div>
         <h1>التصنيفات</h1>
         <p>إدارة تصنيفات المحتوى</p>
@@ -20,13 +20,13 @@
 <div id="addCategoryModal" class="hidden" style="margin-bottom:1.5rem">
     <div class="admin-table-wrap" style="padding:1.25rem">
         <h3 style="font-size:0.9375rem; font-weight:600; margin-bottom:1rem; color:var(--color-text-primary)">إضافة تصنيف جديد</h3>
-        <form method="POST" action="{{ route('admin.categories.store') }}" style="display:grid; grid-template-columns:1fr 1fr auto auto auto; gap:0.75rem; align-items:end">
+        <form method="POST" action="{{ route('admin.categories.store') }}" style="display:flex; gap:0.75rem; align-items:end; flex-wrap:wrap">
             @csrf
-            <div>
+            <div style="flex:1; min-width:160px">
                 <label style="font-size:0.75rem; color:var(--color-text-muted); display:block; margin-bottom:0.25rem">الاسم *</label>
                 <input type="text" name="name" required placeholder="اسم التصنيف" style="width:100%; background:var(--color-surface-700); border:1px solid var(--color-slate-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; color:var(--color-text-primary); font-family:'Cairo',sans-serif">
             </div>
-            <div>
+            <div style="flex:1; min-width:160px">
                 <label style="font-size:0.75rem; color:var(--color-text-muted); display:block; margin-bottom:0.25rem">الوصف</label>
                 <input type="text" name="description" placeholder="وصف مختصر" style="width:100%; background:var(--color-surface-700); border:1px solid var(--color-slate-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; color:var(--color-text-primary); font-family:'Cairo',sans-serif">
             </div>
@@ -96,11 +96,11 @@
                         </form>
                     </div>
                     {{-- Edit row (hidden) --}}
-                    <form method="POST" action="{{ route('admin.categories.update', $cat) }}" id="cat-{{ $cat->id }}" style="display:none; margin-top:0.5rem; display:none">
+                    <form method="POST" action="{{ route('admin.categories.update', $cat) }}" id="cat-{{ $cat->id }}" style="display:none; margin-top:0.5rem">
                         @csrf @method('PATCH')
-                        <div style="display:grid; grid-template-columns:1fr 1fr auto auto auto; gap:0.5rem; align-items:center">
-                            <input type="text" name="name" value="{{ $cat->name }}" required style="background:var(--color-surface-700); border:1px solid var(--color-slate-border); border-radius:0.375rem; padding:0.35rem 0.6rem; font-size:0.8rem; color:var(--color-text-primary); font-family:'Cairo',sans-serif">
-                            <input type="text" name="description" value="{{ $cat->description }}" placeholder="الوصف" style="background:var(--color-surface-700); border:1px solid var(--color-slate-border); border-radius:0.375rem; padding:0.35rem 0.6rem; font-size:0.8rem; color:var(--color-text-primary); font-family:'Cairo',sans-serif">
+                        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap">
+                            <input type="text" name="name" value="{{ $cat->name }}" required style="flex:1; min-width:120px; background:var(--color-surface-700); border:1px solid var(--color-slate-border); border-radius:0.375rem; padding:0.35rem 0.6rem; font-size:0.8rem; color:var(--color-text-primary); font-family:'Cairo',sans-serif">
+                            <input type="text" name="description" value="{{ $cat->description }}" placeholder="الوصف" style="flex:1; min-width:120px; background:var(--color-surface-700); border:1px solid var(--color-slate-border); border-radius:0.375rem; padding:0.35rem 0.6rem; font-size:0.8rem; color:var(--color-text-primary); font-family:'Cairo',sans-serif">
                             <input type="color" name="color" value="{{ $cat->color ?? '#22d3ee' }}" style="height:32px; width:50px; background:var(--color-surface-700); border:1px solid var(--color-slate-border); border-radius:0.375rem; padding:0.15rem; cursor:pointer">
                             <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.75rem;color:var(--color-text-muted)">
                                 <input type="checkbox" name="is_active" value="1" {{ $cat->is_active ? 'checked' : '' }}>

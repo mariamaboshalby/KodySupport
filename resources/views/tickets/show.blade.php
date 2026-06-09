@@ -12,7 +12,7 @@
         <span style="font-family:var(--font-mono); color:var(--color-cyan-400)">{{ $ticket->ticket_number }}</span>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 340px; gap:1.5rem; align-items:start">
+    <div class="layout-2col" style="max-width:900px">
 
         {{-- Main Info --}}
         <div>
@@ -38,7 +38,7 @@
 
                 <hr style="border:none; border-top:1px solid var(--color-slate-border); margin:1.25rem 0">
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem" class="form-row-2col">
 
                     <div>
                         <div style="font-size:0.75rem; color:var(--color-text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.3rem">الاسم</div>

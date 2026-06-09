@@ -30,21 +30,21 @@
     <table class="admin-table">
         <thead>
             <tr>
-                <th>#</th>
+                <th class="col-hide-mobile">#</th>
                 <th>المستخدم</th>
-                <th>البريد</th>
+                <th class="col-hide-mobile">البريد</th>
                 <th>الدور</th>
-                <th>المقالات</th>
-                <th>التعليقات</th>
-                <th>السمعة</th>
-                <th>تاريخ التسجيل</th>
+                <th class="col-hide-mobile">المقالات</th>
+                <th class="col-hide-mobile">التعليقات</th>
+                <th class="col-hide-mobile">السمعة</th>
+                <th class="col-hide-mobile">تاريخ التسجيل</th>
                 <th>الإجراءات</th>
             </tr>
         </thead>
         <tbody>
             @forelse($users as $user)
             <tr>
-                <td style="color:var(--color-text-muted); font-size:0.75rem">{{ $user->id }}</td>
+                <td class="col-hide-mobile" style="color:var(--color-text-muted); font-size:0.75rem">{{ $user->id }}</td>
                 <td>
                     <div style="display:flex; align-items:center; gap:0.625rem">
                         <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" style="width:32px;height:32px;border-radius:50%;flex-shrink:0">
@@ -56,16 +56,16 @@
                         </div>
                     </div>
                 </td>
-                <td style="font-size:0.8125rem">{{ $user->email }}</td>
+                <td class="col-hide-mobile" style="font-size:0.8125rem">{{ $user->email }}</td>
                 <td>
                     <span class="role-badge role-{{ $user->role }}">
                         {{ match($user->role) { 'admin' => 'أدمن', 'moderator' => 'مشرف', default => 'مستخدم' } }}
                     </span>
                 </td>
-                <td style="text-align:center">{{ $user->posts_count }}</td>
-                <td style="text-align:center">{{ $user->comments_count }}</td>
-                <td style="text-align:center; color:var(--color-cyan-400); font-weight:600">{{ $user->reputation }}</td>
-                <td style="font-size:0.75rem; white-space:nowrap">{{ $user->created_at->format('Y/m/d') }}</td>
+                <td class="col-hide-mobile" style="text-align:center">{{ $user->posts_count }}</td>
+                <td class="col-hide-mobile" style="text-align:center">{{ $user->comments_count }}</td>
+                <td class="col-hide-mobile" style="text-align:center; color:var(--color-cyan-400); font-weight:600">{{ $user->reputation }}</td>
+                <td class="col-hide-mobile" style="font-size:0.75rem; white-space:nowrap">{{ $user->created_at->format('Y/m/d') }}</td>
                 <td>
                     <div style="display:flex; align-items:center; gap:0.375rem">
                         {{-- Change role --}}

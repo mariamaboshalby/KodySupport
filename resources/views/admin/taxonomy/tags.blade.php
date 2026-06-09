@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div class="admin-page-header" style="display:flex; align-items:flex-start; justify-content:space-between">
+<div class="admin-page-header admin-page-header-actions">
     <div>
         <h1>الوسوم</h1>
         <p>إدارة الوسوم المستخدمة في تصنيف المقالات</p>
