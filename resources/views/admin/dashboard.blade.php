@@ -93,7 +93,7 @@
     </div>
 
     {{-- Ticket Stats --}}
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:0.875rem; margin-bottom:1rem">
+    <div class="ticket-stats-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:0.875rem; margin-bottom:1rem">
         <div style="background:var(--color-surface-800); border:1px solid var(--color-slate-border); border-radius:var(--radius-card); padding:1rem; display:flex; align-items:center; gap:0.75rem">
             <div style="width:36px;height:36px;border-radius:8px;background:rgba(34,211,238,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                 <svg width="17" height="17" fill="none" stroke="#22d3ee" stroke-width="2" viewBox="0 0 24 24"><path d="M15 5v2M5 5v2M15 19v2M5 19v2M3 9h18M3 15h18"/><rect x="1" y="5" width="22" height="14" rx="3"/></svg>
@@ -140,11 +140,11 @@
                 <tr>
                     <th>رقم التذكرة</th>
                     <th>العميل</th>
-                    <th>الهاتف</th>
-                    <th>نوع الزيارة</th>
-                    <th>التكلفة</th>
+                    <th class="col-hide-sm">الهاتف</th>
+                    <th class="col-hide-sm">نوع الزيارة</th>
+                    <th class="col-hide-md">التكلفة</th>
                     <th>الحالة</th>
-                    <th>التاريخ</th>
+                    <th class="col-hide-sm">التاريخ</th>
                     <th></th>
                 </tr>
             </thead>
@@ -161,10 +161,12 @@
                         @if($ticket->company_name)
                             <div style="font-size:0.75rem;color:var(--color-text-muted)">{{ $ticket->company_name }}</div>
                         @endif
+                        {{-- Show phone inline on mobile --}}
+                        <div class="col-show-sm" style="font-size:0.72rem;color:var(--color-text-muted);direction:ltr;text-align:right;margin-top:2px">{{ $ticket->phone }}</div>
                     </td>
-                    <td style="direction:ltr;text-align:right;font-size:0.8125rem">{{ $ticket->phone }}</td>
-                    <td style="font-size:0.8125rem">{{ $ticket->ticketType?->name ?? $ticket->visit_type_label }}</td>
-                    <td>
+                    <td class="col-hide-sm" style="direction:ltr;text-align:right;font-size:0.8125rem">{{ $ticket->phone }}</td>
+                    <td class="col-hide-sm" style="font-size:0.8125rem">{{ $ticket->ticketType?->name ?? $ticket->visit_type_label }}</td>
+                    <td class="col-hide-md">
                         @if($ticket->expected_cost)
                             <span style="color:var(--color-success);font-weight:500;font-size:0.8125rem">
                                 {{ number_format($ticket->expected_cost, 0) }} ج.م
@@ -182,7 +184,7 @@
                             {{ $ticket->status_label }}
                         </span>
                     </td>
-                    <td style="font-size:0.75rem;white-space:nowrap">{{ $ticket->created_at->diffForHumans() }}</td>
+                    <td class="col-hide-sm" style="font-size:0.75rem;white-space:nowrap">{{ $ticket->created_at->diffForHumans() }}</td>
                     <td>
                         <a href="{{ route('admin.tickets.show', $ticket) }}" class="btn btn-ghost btn-sm btn-icon" title="عرض التذكرة">
                             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -218,9 +220,9 @@
                 <thead>
                     <tr>
                         <th>العنوان</th>
-                        <th>الكاتب</th>
+                        <th class="col-hide-sm">الكاتب</th>
                         <th>الحالة</th>
-                        <th>التاريخ</th>
+                        <th class="col-hide-sm">التاريخ</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -231,8 +233,12 @@
                             <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--color-text-primary); font-weight:500">
                                 {{ $post->title }}
                             </div>
+                            {{-- Show author + date inline on mobile --}}
+                            <div class="col-show-sm" style="font-size:0.72rem;color:var(--color-text-muted);margin-top:2px">
+                                {{ $post->author->display_name }} · {{ $post->created_at->diffForHumans() }}
+                            </div>
                         </td>
-                        <td>
+                        <td class="col-hide-sm">
                             <span style="color:var(--color-text-secondary)">{{ $post->author->display_name }}</span>
                         </td>
                         <td>
@@ -244,7 +250,7 @@
                                 </span>
                             @endif
                         </td>
-                        <td style="font-size:0.75rem; white-space:nowrap">{{ $post->created_at->diffForHumans() }}</td>
+                        <td class="col-hide-sm" style="font-size:0.75rem; white-space:nowrap">{{ $post->created_at->diffForHumans() }}</td>
                         <td>
                             @unless($post->trashed())
                             <a href="{{ route('posts.show', $post) }}" target="_blank" class="btn btn-ghost btn-sm btn-icon" title="عرض">
