@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        body { font-family: 'Cairo', sans-serif; }
+        body { font-family: 'Cairo', sans-serif; overflow-x: hidden; }
 
         /* Admin sidebar layout */
         .admin-layout { display: flex; min-height: 100vh; }
@@ -26,8 +26,9 @@
             flex-direction: column;
             position: fixed;
             top: 0; right: 0; bottom: 0;
-            z-index: 50;
+            z-index: 100;
             overflow-y: auto;
+            transition: right 0.28s cubic-bezier(0.4,0,0.2,1);
         }
 
         .admin-main {
@@ -268,6 +269,21 @@
         /* Inline form (for actions in tables) */
         .action-form { display: inline; }
 
+        /* ── Responsive column helpers ──────────────────────────────────── */
+        /* col-hide-sm  → hidden on ≤ 640px */
+        /* col-hide-md  → hidden on ≤ 768px */
+        /* col-show-sm  → only visible on ≤ 640px (inline supplemental info) */
+        .col-show-sm { display: none; }
+
+        @media (max-width: 640px) {
+            .col-hide-sm { display: none !important; }
+            .col-show-sm { display: block; }
+        }
+
+        @media (max-width: 768px) {
+            .col-hide-md { display: none !important; }
+        }
+
         /* ── Page header flex on mobile ─────────────────────────────────── */
         .admin-page-header-actions {
             display: flex;
@@ -279,22 +295,34 @@
 
         /* ── Responsive ─────────────────────────────────────────────────── */
 
-        /* Tablet: collapse dashboard grid */
-        @media (max-width: 960px) {
+        /* Tablet (≤ 1024px): collapse dashboard grid */
+        @media (max-width: 1024px) {
             .admin-grid-2col { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
         /* Mobile (≤ 768px) */
         @media (max-width: 768px) {
 
-            /* Sidebar: slide off-screen, toggled by JS */
+            /* Sidebar hidden by default on mobile — slides in from right (RTL) */
             .admin-sidebar {
-                transform: translateX(100%);
-                transition: transform 0.25s ease;
+                right: -260px;
+                box-shadow: none;
+                transition: right 0.28s cubic-bezier(0.4,0,0.2,1), box-shadow 0.28s;
+                z-index: 200;
+                visibility: hidden;
             }
-            .admin-sidebar.open { transform: translateX(0); }
-            .admin-main { margin-right: 0; }
+            .admin-sidebar.open {
+                right: 0;
+                box-shadow: -8px 0 32px rgba(0,0,0,0.5);
+                visibility: visible;
+            }
+
+            /* Main area takes full width */
+            .admin-main {
+                margin-right: 0 !important;
+                width: 100%;
+            }
 
             /* Dark overlay behind sidebar */
             .sidebar-overlay {
@@ -302,7 +330,7 @@
                 position: fixed;
                 inset: 0;
                 background: rgba(0,0,0,0.6);
-                z-index: 45;
+                z-index: 190;
             }
             .sidebar-overlay.open { display: block; }
 
@@ -314,13 +342,17 @@
             .admin-topbar  { padding: 0 1rem; }
 
             /* Stat cards: 2 columns */
-            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.625rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.625rem; }
 
-            /* Tables: horizontal scroll */
-            .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-            /* Hide less important table columns */
-            .admin-table .col-hide-mobile { display: none; }
+            /* Tables: horizontal scroll only if needed */
+            .admin-table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            /* Remove fixed min-width on dashboard so columns can hide properly */
+            .admin-table-wrap table {
+                min-width: 0;
+            }
 
             /* Filter bar stacks vertically */
             .filter-bar {
@@ -343,13 +375,17 @@
             }
         }
 
-        /* Very small screens */
+        /* Very small screens (≤ 480px) */
         @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem; }
             .admin-content { padding: 0.75rem 0.625rem; }
+            .admin-grid-2col { grid-template-columns: 1fr; }
 
             /* Topbar: hide user name on tiny screens */
             .topbar-username { display: none; }
+
+            /* Stat card: compact */
+            .stat-card { padding: 0.875rem; }
         }
 
         @media (min-width: 769px) {
@@ -497,12 +533,26 @@
 function toggleAdminSidebar() {
     const sidebar = document.querySelector('.admin-sidebar');
     const overlay = document.getElementById('sidebarOverlay');
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('open');
+    const isOpen  = sidebar.classList.toggle('open');
+    overlay.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide) lucide.createIcons();
+
+    // Close sidebar on nav link click (mobile UX)
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.querySelector('.admin-sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+    });
 });
 </script>
 @stack('scripts')

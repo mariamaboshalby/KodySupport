@@ -20,12 +20,12 @@ Route::prefix('admin')
         // ── Posts ─────────────────────────────────────────────────────────
         Route::prefix('posts')->name('posts.')->group(function () {
             Route::get('/',                    [AdminPostController::class, 'index'])->name('index');
-            Route::patch('/{post}/status',     [AdminPostController::class, 'updateStatus'])->name('update-status');
-            Route::patch('/{post}/pin',        [AdminPostController::class, 'togglePin'])->name('toggle-pin');
-            Route::patch('/{post}/lock',       [AdminPostController::class, 'toggleLock'])->name('toggle-lock');
+            Route::patch('/{post}/status',     [AdminPostController::class, 'updateStatus'])->name('status');
+            Route::patch('/{post}/pin',        [AdminPostController::class, 'togglePin'])->name('pin');
+            Route::patch('/{post}/lock',       [AdminPostController::class, 'toggleLock'])->name('lock');
             Route::delete('/{post}',           [AdminPostController::class, 'destroy'])->name('destroy');
-            Route::post('/{id}/restore',       [AdminPostController::class, 'restore'])->name('restore');
-            Route::delete('/{id}/force',       [AdminPostController::class, 'forceDelete'])->name('force-delete');
+            Route::patch('/{id}/restore',      [AdminPostController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force-delete',[AdminPostController::class, 'forceDelete'])->name('force-delete');
         });
 
         // ── Comments ──────────────────────────────────────────────────────
