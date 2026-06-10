@@ -70,7 +70,7 @@
                     <div style="display:flex; align-items:center; gap:0.375rem">
                         {{-- Change role --}}
                         @if($user->id !== auth()->id())
-                        <form method="POST" action="{{ route('admin.users.role', $user) }}" class="action-form" style="display:inline-flex; align-items:center; gap:0.25rem">
+                        <form method="POST" action="{{ route('admin.users.update-role', $user) }}" class="action-form" style="display:inline-flex; align-items:center; gap:0.25rem">
                             @csrf @method('PATCH')
                             <select name="role" style="background:var(--color-surface-700); border:1px solid var(--color-slate-border); border-radius:0.375rem; padding:0.25rem 0.5rem; font-size:0.75rem; color:var(--color-text-primary); font-family:'Cairo',sans-serif">
                                 <option value="user"      {{ $user->role === 'user'      ? 'selected' : '' }}>مستخدم</option>
